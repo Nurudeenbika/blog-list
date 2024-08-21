@@ -1,40 +1,20 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const Blog = require('./models/blog')
 
-app.use(express.json())
 app.use(cors())
-
-let blogs = [
-    {
-        "id": "1",
-        "title": "Intro to HTML",
-        author: "Hassan Nurudeen",
-        url: "nurubika.com/intro-to-html",
-        likes: 2000
-     }, 
-   {
-      "id": "2",
-      "title": "Intro to Js",
-      author: "Hassan Osikpemhi",
-      url: "nurubika.com/intro-to-Js",
-      likes: 1000
-   }, 
-   {
-      "id": "3",
-      "title": "Intro to React",
-      author: "Bika Nurudeen",
-      url: "nurubika.com/intro-to-react",
-      likes: 3000
-   } 
-]
+app.use(express.json())
 
 app.get('/', (request, response) => {
   response.send('<h1>Helllo World!</h1')
 })
 
 app.get('/api/blogs', (request, response) => {
-  response.json(blogs)
+  Blog.find({}).then(blogs => {
+    response.json(blogs)
+  })  
 })
 
 app.get('/api/blogs/:id', (request, response) => {
@@ -48,9 +28,11 @@ app.get('/api/blogs/:id', (request, response) => {
 })
 
 app.post('/api/blogs', (request, response) => {
-    const blog = request.body
-    console.log(blog)
-    response.json(blog)
+   const blog = new Blog(request.body)
+
+   blog.save().then(result => {
+    response.status(201).json(result)
+   })
 })
 
 app.delete('/api/blogs/:id', (request, response) => {
@@ -72,10 +54,11 @@ const requestLogger = (request, response, next) => {
     next()
   }
 
+  app.use(unknownEndpoint)
   app.use(express.json())
   app.use(requestLogger)
 
-const PORT = process.env.PORT || 3003
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })  
