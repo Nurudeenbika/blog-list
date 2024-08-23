@@ -3,8 +3,8 @@ Content-Type: application/json
 
 
 {
-    "title": "Intro to Js",
+    "title": "Intr",
     "author": "Hassan Nurudeen",
-    "url": "nurubika.com/intro-to-js",
-    "likes": 6700
+    "url": "nurubika.com/intro-to-react",
+    "likes": 6200
 }
