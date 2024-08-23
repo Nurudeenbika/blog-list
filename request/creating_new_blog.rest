@@ -1,10 +1,10 @@
-POST http://localhost:3003/api/blogs
+POST   http://localhost:3003/api/blogs
 Content-Type: application/json
 
 
 {
-    "title": "Intro to CSS",
+    "title": "Intro to Js",
     "author": "Hassan Nurudeen",
-    "url": "nurubika.com/intro-to-css",
-    "likes": 3500
+    "url": "nurubika.com/intro-to-js",
+    "likes": 6700
 }

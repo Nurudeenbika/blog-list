@@ -17,14 +17,16 @@ app.get('/api/blogs', (request, response) => {
   })  
 })
 
-app.get('/api/blogs/:id', (request, response) => {
-    const id = request.params.id
-    const blog = blogs.find(blog => blog.id === id)
-    if (blog) {
-      response.json(blog)
-    } else {
+app.get('/api/blogs/:id', (request, response, next) => {
+  Blog.findById(request.params.id)
+    .then(blog => {
+      if (blog) {
+        response.json(blog)
+      } else {
         response.status(404).end()
-    } 
+      }
+  })
+  .catch(error => next(error))
 })
 
 app.post('/api/blogs', (request, response) => {
@@ -35,15 +37,42 @@ app.post('/api/blogs', (request, response) => {
    })
 })
 
-app.delete('/api/blogs/:id', (request, response) => {
-    const id = request.params.id
-    blogs = blogs.filter(blog => blog.id !== id)
+app.put('/api/blogs/:id', (request, response, next) => {
+    const body = request.body
 
-    response.status(204).end()
+    const blog = {
+        title: body.title,
+        author: body.author,
+        url: body.url,
+        likes: body.likes, 
+    }
+
+    Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+      .then(updatedBlog => {
+        response.json(updatedBlog)
+      })
+      .catch(error => next(error))
+})
+
+app.delete('/api/blogs/:id', (request, response) => {
+  Blog.findByIdAndDelete(request.params.id)
+    .then(() => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
+}
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+  next(error)
 }
 
 const requestLogger = (request, response, next) => {
@@ -57,6 +86,7 @@ const requestLogger = (request, response, next) => {
   app.use(unknownEndpoint)
   app.use(express.json())
   app.use(requestLogger)
+  app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
