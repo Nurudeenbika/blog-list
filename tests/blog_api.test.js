@@ -12,11 +12,7 @@ const api = supertest(app)
 beforeEach(async () => {
   await Blog.deleteMany({})
 
-  let blogObject = new Blog(helper.initialBlogs[0])
-  await blogObject.save()
-
-  blogObject = new Blog(helper.initialBlogs[1])
-  await blogObject.save()
+  await Blog.insertMany(helper.initialBlogs)
 })
 
 test('blogs are returned as json', async () => {
@@ -64,7 +60,24 @@ test('a valid blog can be added', async () => {
 
 })
 
-test('blog without content is not added', async () => {
+test('if the likes property is missing, it defaults to 0', async () => {
+  const newBlog = {
+    title: 'Intro to React',
+    author: 'Bika O. Nurudeen',
+    url: 'nurubika.com/intro-to-react'
+  }
+
+  const response = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blog = response.body
+  assert.strictEqual(blog.likes, 0)
+})
+
+test('blog without title is not added', async () => {
   const newBlog = {
     likes: 4000
   }
@@ -77,6 +90,35 @@ test('blog without content is not added', async () => {
   const blogsAtEnd = await helper.blogsInDb()
 
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+})
+
+test('a specific blog can be viewed', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+
+  const blogToView = blogsAtStart[0]
+
+  const resultBlog = await api
+    .get(`/api/blogs/${blogToView.id}`)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  assert.deepStrictEqual(resultBlog.body, blogToView)
+})
+
+test('a blog can be deleted', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToDelete = blogsAtStart[0]
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+
+  const blogsAtEnd = await helper.blogsInDb()
+
+  const titles = blogsAtEnd.map(r => r.title)
+  assert(!titles.includes(blogToDelete.title))
+
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
 })
 
 after(async () => {
