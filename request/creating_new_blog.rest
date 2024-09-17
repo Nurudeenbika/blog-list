@@ -1,12 +1,13 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkJpa2EiLCJpZCI6IjY2ZTZjOGEzMTY4M2Q1NzVhZjVkMGYyMyIsImlhdCI6MTcyNjQwODk4Nn0.7Z02okTT2-wAbp2iB1YahiyA6yqh8w7iZSjFzmnTzEg
 
 {
-  "title": "Intro to Angular",
+  "title": "Intro to VScode",
   "author": "Hassan B. Nurudeen",
-  "url": "nurubika.com/intro-to-angular",
-  "likes": 7000,
-  "userId": "66d0a4aec1e18a228a30e43f" 
+  "url": "nurubika.com/intro-to-vscode",
+  "likes": 7000
+  //"userId": "66d0a4aec1e18a228a30e43f" 
 }
 
 
@@ -17,7 +18,15 @@ Content-Type: application/json
 
 
 # {
-#   "username": "root",
-#   "name": "Superuser",
-#   "password": "osikpemhi"
+#   "username": "Bika",
+#   "name": "NurudeenBika",
+#   "password": "hassan"
+# }
+
+# POST http://localhost:3003/api/login
+# Content-Type: application/json
+
+# {
+#   "username": "Bika",
+#   "password": "hassan"
 # }
